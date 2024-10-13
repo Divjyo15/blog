@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= blog.title %></title>
+    <link href="/css/tailwind.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+
+    <!-- Navbar -->
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-white text-xl font-bold">
+                <a href="/">Home</a>
+            </div>
+
+            <% if (user) { %>
+            <div class="relative">
+                <button id="dropdownButton" class="text-white focus:outline-none">
+                    <%= user.fullName %>
+                    <svg class="inline w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <!-- Dropdown Menu -->
+                <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                    <a href="/user/logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Logout</a>
+                </div>
+            </div>
+            <% } %>
+        </div>
+    </nav>
+
+    <!-- Blog Content -->
+    <div class="container mx-auto mt-8 max-w-2xl bg-white shadow-lg rounded-lg p-8">
+        <h1 class="text-3xl font-bold mb-4"><%= blog.title %></h1>
+        <p class="text-gray-700 mb-4"><%= blog.body %></p>
+        <% if (blog.coverImageURL) { %>
+            <img src="<%= blog.coverImageURL %>" alt="Cover Image" class="w-full h-auto mb-4">
+        <% } %>
+        <p class="text-gray-500 text-sm">Written by <%= blog.createdBy.fullName %> on <%= blog.createdAt.toLocaleDateString() %></p>
+        
+        <!-- Profile Image and Name -->
+        <div class="flex items-center space-x-2 mt-4">
+            <img src="<%= blog.createdBy.profileImageURL %>" 
+                 alt="Profile Image" 
+                 class="rounded-full w-12 h-12" 
+                 style="width: 48px; height: 48px; object-fit: cover;">
+            <span class="text-gray-700 font-medium"><%= blog.createdBy.fullName %></span>
+        </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="container mt-3">
+        <h1>Comments (<%= comments.length %>)</h1>
+        
+        <% if (user) { %>
+        <!-- Comment form to add new comment -->
+        <form action="/blog/comment/<%= blog._id %>" method="post">
+            <div class="mb-3">
+                <input
+                    type="text"
+                    name="content"
+                    class="form-control"
+                    placeholder="Enter your comment"
+                />
+                <button class="btn btn-sm btn-primary" type="submit">Add</button>
+            </div>
+        </form>
+        <% } %>
+
+        <!-- Display Comments -->
+        <div class="mt-3">
+            <% comments.forEach(comment => { %>
+            <div id="comment-<%= comment._id %>">
+                <img src="<%= comment.createdBy.profileImageURL %>" width="50px" />
+                <%= comment.createdBy.fullName %>
+
+                <!-- Show the comment or the edit form based on "isEditing" state -->
+                <div id="comment-content-<%= comment._id %>">
+                    <% if (user && user._id.toString() === comment.createdBy._id.toString()) { %>
+                        <!-- If the user is the comment creator, show the edit option -->
+                        <% if (comment.isEditing) { %>
+                            <!-- Edit Form -->
+                            <form action="/blog/comment/<%= comment._id %>/edit" method="POST">
+                                <textarea name="content" class="w-full p-2 border rounded-lg"><%= comment.content %></textarea>
+                                <button type="submit" class="text-green-500 mt-2">Save</button>
+                                <button type="button" class="text-red-500 mt-2" onclick="cancelEdit('<%= comment._id %>')">Cancel</button>
+                            </form>
+                        <% } else { %>
+                            <!-- Normal Comment Display -->
+                            <pre><%= comment.content %></pre>
+                            <a href="javascript:void(0);" class="text-blue-500" onclick="editComment('<%= comment._id %>')">Edit</a>
+                        <% } %>
+                    <% } else { %>
+                        <!-- If the user is not the creator, just show the comment -->
+                        <pre><%= comment.content %></pre>
+                    <% } %>
+                </div>
+            </div>
+            <% }) %>
+        </div>
+    </div>
+
+    <!-- JavaScript to handle in-place comment editing -->
+    <script>
+        function editComment(commentId) {
+            document.querySelector(`#comment-content-${commentId}`).innerHTML = `
+                <form action="/blog/comment/${commentId}/edit" method="POST">
+                    <textarea name="content" class="w-full p-2 border rounded-lg">${document.querySelector(`#comment-content-${commentId} pre`).innerText}</textarea>
+                    <button type="submit" class="text-green-500 mt-2">Save</button>
+                    <button type="button" class="text-red-500 mt-2" onclick="cancelEdit('${commentId}')">Cancel</button>
+                </form>
+            `;
+        }
+
+        function cancelEdit(commentId) {
+            // Reload the page to cancel the edit
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>

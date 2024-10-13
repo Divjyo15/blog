@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Navbar -->
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-white text-xl font-bold">Blog</div>
+            <div class="space-x-4">
+                <a href="/" class="text-gray-300 hover:text-white">Home</a>
+                
+                <% if (user) { %>
+                    <a href="/your-blog" class="text-gray-300 hover:text-white">Your Blog</a>
+                    <a href="/blog/add-new" class="text-gray-300 hover:text-white">Add Blog</a>
+                    <div class="relative inline-block text-left">
+                        <button id="userDropdown" class="text-white">
+                            <%= user.fullName %>
+                            <svg class="w-4 h-4 ml-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div id="userDropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg">
+                            <a href="/user/logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <a href="/user/signup" class="text-gray-300 hover:text-white">Sign Up</a>
+                    <a href="/user/signin" class="text-gray-300 hover:text-white">Sign In</a>
+                <% } %>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Blog Cards Section -->
+    <div class="container mx-auto mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% blogs.forEach(blog => { %>
+            <div class="bg-white shadow-lg rounded-lg p-6">
+                <% if (blog.coverImageURL) { %>
+                    <img src="<%= blog.coverImageURL %>" alt="Blog Cover Image" class="w-full h-48 object-cover rounded-lg mb-4">
+                <% } %>
+                <h2 class="text-2xl font-bold mb-2"><%= blog.title %></h2>
+                <p class="text-gray-700"><%= blog.body.substring(0, 100) %>...</p>
+                <a href="/blog/<%= blog._id %>" class="text-blue-500 mt-4 block">View</a>
+            </div>
+        <% }) %>
+    </div>
+
+    <script>
+        const userDropdown = document.getElementById('userDropdown');
+        const userDropdownMenu = document.getElementById('userDropdownMenu');
+        
+        if (userDropdown) {
+            userDropdown.addEventListener('click', () => {
+                userDropdownMenu.classList.toggle('hidden');
+            });
+        }
+    </script>
+</body>
+</html>

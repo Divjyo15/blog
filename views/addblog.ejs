@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a New Blog</title>
+    <link href="/css/tailwind.css" rel="stylesheet">
+    <style>
+        input[type="text"], textarea, input[type="file"] {
+            background-color: #ffffff;
+            border: 1px solid #d1d5db;
+            color: #1f2937;
+            margin-bottom: 1rem; /* Reduced space */
+            padding: 10px; /* Reduced padding */
+            border-radius: 8px;
+            width: calc(100% - 20px); /* Increased width */
+        }
+        input[type="text"]:focus, textarea:focus, input[type="file"]:focus {
+            outline: 2px solid #000000;
+            border-color: #000000;
+        }
+        .submit-button {
+            background-color: #4b5563;
+            color: white;
+            font-weight: bold;
+            padding: 10px 20px; /* Slightly smaller padding */
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+        .submit-button:hover, .submit-button:focus {
+            background-color: #1f2937;
+        }
+        .submit-button:active {
+            background-color: #000000;
+        }
+        .form-group {
+            margin-bottom: 1.5rem; /* Reduced space */
+        }
+        .container {
+            padding: 20px; /* Reduced padding */
+        }
+        textarea {
+            height: 150px; /* Increase textarea height */
+        }
+        nav {
+            padding: 2px 2px; /* Reduced padding */
+        }
+        nav a {
+            font-size: 14px; /* Reduced font size */
+        }
+        nav .text-xl {
+            font-size: 18px; /* Reduced title font size */
+        }
+        .relative {
+            padding: 0 12px; /* Adjust the padding inside the dropdown */
+        }
+        .dropdown-menu {
+            padding: 8px 16px; /* Adjust dropdown padding */
+            font-size: 14px; /* Reduced font size of dropdown */
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-gray-800 p-3 mb-2">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-white text-xl font-bold">
+                <a href="/">Home</a>
+            </div>
+            <% if (user) { %>
+            <div class="relative">
+                <button id="dropdownButton" class="text-white focus:outline-none">
+                    <%= user.fullName %>
+                    <svg class="inline w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                    <a href="/logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Logout</a>
+                </div>
+            </div>
+            <% } %>
+        </div>
+    </nav>
+    <div class="container mx-auto mt-8 p-8 bg-white rounded-lg shadow-md">
+        <h1 class="text-3xl font-bold mb-4 text-gray-800">Create a New Blog</h1>
+        <form action="/blog" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="title" class="block text-gray-700 font-bold mb-1">Title</label>
+                <input 
+                    type="text" 
+                    id="title" 
+                    name="title" 
+                    class="w-full p-2 rounded-md"
+                    required
+                    placeholder="Enter your blog title"
+                >
+            </div>
+            <div class="form-group">
+                <label for="body" class="block text-gray-700 font-bold mb-1">Body</label>
+                <textarea 
+                    id="body" 
+                    name="body" 
+                    class="w-full p-2 rounded-md" 
+                    rows="6"
+                    required
+                    placeholder="Write your blog content here"
+                ></textarea>
+            </div>
+            <div class="form-group">
+                <label for="coverImage" class="block text-gray-700 font-bold mb-1">Cover Image</label>
+                <input 
+                    type="file" 
+                    id="coverImage" 
+                    name="coverImage" 
+                    class="w-full p-2 rounded-md"
+                    accept="image/*"
+                >
+            </div>
+            <div>
+                <button type="submit" class="submit-button">
+                    Submit Blog
+                </button>
+            </div>
+        </form>
+    </div>
+    <script>
+        const dropdownButton = document.getElementById('dropdownButton');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        dropdownButton.addEventListener('click', () => {
+            dropdownMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>
